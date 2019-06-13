@@ -1,4 +1,5 @@
 ﻿using System;
+using Lesson6_Weather_Dictionary;
 
 namespace Lesson6_Weather
 {

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Lesson6_Weather
+namespace Lesson6_Weather_Dictionary
 {
     class WeaterDictionary
     {

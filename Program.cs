@@ -1,4 +1,5 @@
 ﻿using System;
+using Lesson6_Weather_Dictionary;
 
 namespace Lesson6_Weather
 {
@@ -9,8 +10,8 @@ namespace Lesson6_Weather
             Weather weather1 = new Weather(DateTime.Parse("13.06.2019"), 22, 31, WeaterDictionary.CloudyList.Clear, 
                 WeaterDictionary.PrecipitationList.Undefined, 60, 5, WeaterDictionary.WindDirectionList.Southeast, WeaterDictionary.MoonPhaseList.FullMoon);
 
-            Console.WriteLine(weather1);          
-
+            Console.WriteLine(weather1);
+            Console.WriteLine();
         }
     }
 }

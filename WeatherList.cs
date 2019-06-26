@@ -5,12 +5,10 @@ namespace Lesson6_Weather
     class WeatherList
     {
         Weather[][] list;
-
-        internal Weather[][] List { get => list; set => list = value; }
-
+        
         public WeatherList()
         {
-            List = new Weather[12][];
+            list = new Weather[12][];
         }
 
         public void setRandomData()
@@ -21,23 +19,23 @@ namespace Lesson6_Weather
             for (int i = 0; i < 12; i++)
             {
                 int dayInMonth = DateTime.DaysInMonth(year, i + 1);
-                List[i] = new Weather[dayInMonth];
+                list[i] = new Weather[dayInMonth];
 
                 for (int j = 0; j < dayInMonth; j++)
                 {
-                    List[i][j] = getRandomWeather(rnd, year, i, j);
+                    list[i][j] = getRandomWeather(rnd, year, i, j);
                 }
             }
         }
 
-        public T getRandomDic<T>(Random rnd)
+        private T getRandomDic<T>(Random rnd)
         {
             string[] values = Enum.GetNames(typeof(T));
             int ind = rnd.Next(0, values.Length - 1);
             return (T)Enum.Parse(typeof(T), values[ind]);
         }
 
-        Weather getRandomWeather(Random rnd, int year, int month, int day)
+        private Weather getRandomWeather(Random rnd, int year, int month, int day)
         {
             DateTime dt = new DateTime(year, month + 1, day + 1);
             sbyte tMin = (sbyte)rnd.Next(-30, 30);
@@ -68,9 +66,13 @@ namespace Lesson6_Weather
             string result = "";
             for (int i = 0; i < list.Length; i++)
                 for (int j = 0; j < list[i].Length; j++)
-                    result += list[i][j] + "\n";
+                    result += list[i][j] + "\n\n";
 
             return result;
+        }
+
+        private int getAvgTempOfDay(Weather w) {
+            return (w.TempMin + w.TempMax) / 2;
         }
 
         // среднегодовую температуру
@@ -82,7 +84,7 @@ namespace Lesson6_Weather
             for (int i = 0; i < list.Length; i++)
                 for (int j = 0; j < list[i].Length; j++)
                 {
-                    sumYear += (list[i][j].TempMin + list[i][j].TempMax) / 2;
+                    sumYear += getAvgTempOfDay(list[i][j]);
                     days++;
                 }
             return sumYear / days;
@@ -99,7 +101,8 @@ namespace Lesson6_Weather
                 for (int j = 0; j < list[i].Length; j++)
                 {
                     if (list[i][j].Precipitation == WeaterDictionary.PrecipitationList.Undefined
-                        && list[i][j].Cloudy == WeaterDictionary.CloudyList.Clear)
+                        && (list[i][j].Cloudy == WeaterDictionary.CloudyList.Clear 
+                            || list[i][j].Cloudy == WeaterDictionary.CloudyList.PartlyCloudy))
                         clearSkyInMonth[i]++;
                 }
             }
@@ -111,13 +114,27 @@ namespace Lesson6_Weather
             return (sum / 12);
         }
 
+        private bool IsPrecipitation (Weather w)
+        {
+            return (w.Precipitation == WeaterDictionary.PrecipitationList.Rain
+                || w.Precipitation == WeaterDictionary.PrecipitationList.Snow
+                || w.Precipitation == WeaterDictionary.PrecipitationList.Sleet
+                || w.Precipitation == WeaterDictionary.PrecipitationList.Hail
+                || w.Precipitation == WeaterDictionary.PrecipitationList.SnowGrout);
+        }
+
+        private bool IsSlowWindForce (Weather w)
+        {
+            return (w.WindForce < 5);
+        }
+
         //общее количество дней в году с осадками
         public int SumPrecipitationYear()
         {
             int sum = 0;
             for (int i = 0; i < list.Length; i++)
                 for (int j = 0; j < list[i].Length; j++)
-                    if (list[i][j].Precipitation != WeaterDictionary.PrecipitationList.Undefined)
+                    if (IsPrecipitation(list[i][j])) 
                         sum++;
             return sum;
         }
@@ -128,7 +145,7 @@ namespace Lesson6_Weather
             int sum = 0;
             for (int i = 0; i < list.Length; i++)
                 for (int j = 0; j < list[i].Length; j++)
-                    if (list[i][j].WindForce < 5)
+                    if (IsSlowWindForce(list[i][j]))
                         sum++;
             return sum;
         }
@@ -141,7 +158,7 @@ namespace Lesson6_Weather
 
             for (int i = 0; i < list.Length; i++)
                 for (int j = 0; j < list[i].Length; j++)
-                    if ((list[i][j].TempMin + list[i][j].TempMax) / 2 > avgYearTemp)
+                    if (getAvgTempOfDay(list[i][j]) > avgYearTemp)
                         sum++;
             return sum;
         }
@@ -154,7 +171,7 @@ namespace Lesson6_Weather
 
             for (int i = 0; i < list.Length; i++)
                 for (int j = 0; j < list[i].Length; j++)
-                    if ((list[i][j].TempMin + list[i][j].TempMax) / 2 < avgYearTemp)
+                    if (getAvgTempOfDay(list[i][j]) < avgYearTemp)
                         sum++;
             return sum;
         }
@@ -169,7 +186,7 @@ namespace Lesson6_Weather
                 precipitationInMonth[i] = 0;
                 for (int j = 0; j < list[i].Length; j++)
                 {
-                    if (list[i][j].Precipitation != WeaterDictionary.PrecipitationList.Undefined)
+                    if (IsPrecipitation(list[i][j]))
                         precipitationInMonth[i]++;
                 }
             }
@@ -197,10 +214,8 @@ namespace Lesson6_Weather
             {
                 lowWindForceInMonth[i] = 0;
                 for (int j = 0; j < list[i].Length; j++)
-                {
-                    if (list[i][j].WindForce < 5)
+                    if (IsSlowWindForce(list[i][j]))
                         lowWindForceInMonth[i]++;
-                }
             }
 
             int min = 0;

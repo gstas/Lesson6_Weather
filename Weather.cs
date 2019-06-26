@@ -1,5 +1,4 @@
 ﻿using System;
-using Lesson6_Weather_Dictionary;
 
 namespace Lesson6_Weather
 {
@@ -19,12 +18,16 @@ namespace Lesson6_Weather
             Облачность, осадки, направление ветра, фаза луны должны быть представлены как битовое перечисление:
          */
 
+        byte humidity;
+        
         public DateTime Date { get; set; }
         public sbyte TempMin { get; set; }
         public sbyte TempMax { get; set; }
         public WeaterDictionary.CloudyList Cloudy { get; set; }
         public WeaterDictionary.PrecipitationList Precipitation { get; set; }
-        public byte Humidity { get; set; }
+        public byte Humidity {
+            get => humidity;
+            set => humidity = (byte)(value > 100 ? 100 : value); }
         public byte WindForce { get; set; }
         public WeaterDictionary.WindDirectionList WindDirection { get; set; }
         public WeaterDictionary.MoonPhaseList MoonPhase { get; set; }
@@ -53,12 +56,10 @@ namespace Lesson6_Weather
         
         public override string ToString()
         {
-            string result = $"{Date.ToShortDateString()}; Tmin = {TempMin}, Tmax = {TempMax}\n" +
+            return $"{Date.ToShortDateString()}; Tmin = {TempMin}, Tmax = {TempMax}\n" +
                 $"Облачность: {WeaterDictionary.GetCloudy(Cloudy)}, Осадки: {WeaterDictionary.GetPrecipitation(Precipitation)}, Влажность: {Humidity}%\n" +
                 $"Ветер: {WindForce} м/с ({WeaterDictionary.GetWindDirection(WindDirection)})\n" +
                 $"Фаза Луны: {WeaterDictionary.GetMoonPhase(MoonPhase)}";
-
-            return result;
         }
     }
 }
